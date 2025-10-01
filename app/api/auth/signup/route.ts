@@ -1,23 +1,16 @@
-import { PrismaClient } from '@/app/generated/prisma'
+
 import { NextRequest } from 'next/server';
+import prisma from '@/db';
 
 
-
-const prisma = new PrismaClient(
-  { 
-    log: [{ emit: 'event', level: 'query' },
-    // { emit: 'stdout', level: 'error' }
-   ]
-  }
-)
-
-prisma.$on('query', (e) => {
-  console.log('Query:', e.query);
-  console.log('Params:', e.params);
-  console.log('Duration:', e.duration, 'ms');
-});
+// prisma.$on('query', (e) => {
+//   console.log('Query:', e.query);
+//   console.log('Params:', e.params);
+//   console.log('Duration:', e.duration, 'ms');
+// });
 
 export async function POST(req:NextRequest) {
+  
   const body = await req.json();
   const {username, password,email, firstname, lastname} = body;
   console.log("body",body);
@@ -62,3 +55,8 @@ export async function POST(req:NextRequest) {
 //     await prisma.$disconnect()
 //     process.exit(1)
 //   })
+
+export async function GET(req: NextRequest) {
+  const users = await prisma.users.findMany();
+  return Response.json(users);
+}

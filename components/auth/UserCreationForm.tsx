@@ -6,6 +6,7 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import axios from "axios";
 import { log } from "console";
+import signupAction from "@/app/actions/signup";
 
 interface UserFormData {
   username: string;
@@ -65,11 +66,11 @@ export default function UserCreationForm() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("/api/auth/signup", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      // const response = await axios.post("/api/auth/signup", formData, {
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // });
 
       //       const response = await axios({
       //   method: 'post',
@@ -79,8 +80,9 @@ export default function UserCreationForm() {
       //     'Content-Type': 'application/json'
       //   }
       // });
+      const response = await signupAction(undefined, formData);
 
-      console.log("Registration successful:", response.data);
+      console.log("Registration successful:", response);
 
       router.push("/signin"); // Redirect to login page after successful registration
     } catch (error) {

@@ -1,6 +1,7 @@
 
 import { NextRequest } from 'next/server';
 import prisma from '@/db';
+import signupAction from '@/app/actions/signup';
 
 
 // prisma.$on('query', (e) => {
@@ -9,41 +10,11 @@ import prisma from '@/db';
 //   console.log('Duration:', e.duration, 'ms');
 // });
 
-export async function POST(req:NextRequest) {
-  
-  const body = await req.json();
-  const {username, password,email, firstname, lastname} = body;
-  console.log("body",body);
-  
-  if (!username || !password || !email || !firstname) {
-    return  Response.json({ error: 'Missing required fields' }, { status: 400 });
-  }
-  const userExists = await prisma.users.findUnique({
-    where: { username }
-  });
-   console.log("userExists",userExists);
-  if (userExists) {
-    return  Response.json({ error: 'Username already exists' }, { status: 409 });
-  }
-  
-
-  // console.log("bfy",body);
-
-  const user = await prisma.users.create({
-    data: {
-      username,
-      password,      
-      user_details: {
-        create: {
-          firstname,
-          lastname,
-          email,
-        }
-      }
-    }, select: { id: true, username: true }
-  })
-    
-  return Response.json({ message: `User ${user.username} registered successfully` }, { status: 200 });
+export async function POST(req: NextRequest) {
+   const data =await signupAction(req);
+   console.log("route data",data);
+    return Response.json(data);
+  // return Response.json({ message: `User ${user.username} registered successfully` }, { status: 200 });
 }
 
 // main()

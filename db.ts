@@ -15,7 +15,8 @@ import { PrismaClient } from '@/app/generated/prisma'
 //  const short:(Prisma.LogLevel | Prisma.LogDefinition)[]= {all: ['query', 'info', 'warn', 'error'],query:['query']}
 //  const customlogging = {log: [{ emit: 'event', level: 'query' }]}
 
-  return new PrismaClient({log:['query']});
+  // return new PrismaClient({log:['query']});
+  return new PrismaClient();
 }  
 
 function createPrismaClient() {

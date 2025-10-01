@@ -14,7 +14,7 @@ async function fetchData() {
 // export const revalidate = 20; //for ISR at page level
 
 export default async function Home() {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   const data = await fetchData();
 
   return (

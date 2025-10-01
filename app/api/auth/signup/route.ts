@@ -2,22 +2,55 @@ import { PrismaClient } from '@/app/generated/prisma'
 import { NextRequest } from 'next/server';
 
 
-const prisma = new PrismaClient()
 
-export async function GET(req:NextRequest) {
-  const body = await req.json();
-  const {username, password, name, email, firstname, lastname} = body;
-
-  if (!username || !password || !name || !email || !firstname) {
-    return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 });
+const prisma = new PrismaClient(
+  { 
+    log: [{ emit: 'event', level: 'query' },
+    // { emit: 'stdout', level: 'error' }
+   ]
   }
+)
 
-  console.log("bfy",body);
+prisma.$on('query', (e) => {
+  console.log('Query:', e.query);
+  console.log('Params:', e.params);
+  console.log('Duration:', e.duration, 'ms');
+});
+
+export async function POST(req:NextRequest) {
+  const body = await req.json();
+  const {username, password,email, firstname, lastname} = body;
+  console.log("body",body);
   
-//   prisma.users.create({
-//     data: {}
-//   )
-      
+  if (!username || !password || !email || !firstname) {
+    return  Response.json({ error: 'Missing required fields' }, { status: 400 });
+  }
+  const userExists = await prisma.users.findUnique({
+    where: { username }
+  });
+   console.log("userExists",userExists);
+  if (userExists) {
+    return  Response.json({ error: 'Username already exists' }, { status: 409 });
+  }
+  
+
+  // console.log("bfy",body);
+
+  const user = await prisma.users.create({
+    data: {
+      username,
+      password,      
+      user_details: {
+        create: {
+          firstname,
+          lastname,
+          email,
+        }
+      }
+    }, select: { id: true, username: true }
+  })
+    
+  return Response.json({ message: `User ${user.username} registered successfully` }, { status: 200 });
 }
 
 // main()

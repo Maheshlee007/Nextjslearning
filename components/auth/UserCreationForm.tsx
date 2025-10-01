@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Input from '../ui/Input';
-import Button from '../ui/Button';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Input from "../ui/Input";
+import Button from "../ui/Button";
+import axios from "axios";
+import { log } from "console";
 
 interface UserFormData {
   username: string;
   password: string;
-  name: string;
   email: string;
   firstname: string;
   lastname: string;
@@ -18,71 +19,75 @@ export default function UserCreationForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<UserFormData>>({});
-  
+
   const [formData, setFormData] = useState<UserFormData>({
-    username: '',
-    password: '',
-    name: '',
-    email: '',
-    firstname: '',
-    lastname: ''
+    username: "",
+    password: "",
+    email: "",
+    firstname: "",
+    lastname: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     // Clear error when user starts typing
     if (errors[name as keyof UserFormData]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: undefined
+        [name]: undefined,
       }));
     }
   };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<UserFormData> = {};
-    
-    if (!formData.username) newErrors.username = 'Username is required';
-    if (!formData.password) newErrors.password = 'Password is required';
-    if (!formData.name) newErrors.name = 'Name is required';
-    if (!formData.email) newErrors.email = 'Email is required';
-    if (!formData.firstname) newErrors.firstname = 'First name is required';
-    
+
+    if (!formData.username) newErrors.username = "Username is required";
+    if (!formData.password) newErrors.password = "Password is required";
+    // if (!formData.name) newErrors.name = 'Name is required';
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.firstname) newErrors.firstname = "First name is required";
+
     setErrors(newErrors);
+    console.log("formData", formData, newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
-    
+
     try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
+      const response = await axios.post("/api/auth/signup", formData, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Something went wrong');
-      }
+      //       const response = await axios({
+      //   method: 'post',
+      //   url: '/api/auth/signup',
+      //   data: formData,
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   }
+      // });
 
-      router.push('/auth/signin'); // Redirect to login page after successful registration
+      console.log("Registration successful:", response.data);
+
+      router.push("/signin"); // Redirect to login page after successful registration
     } catch (error) {
-      console.error('Registration error:', error);
-      setErrors(prev => ({
+      console.error("Registration error:", error);
+      setErrors((prev) => ({
         ...prev,
-        username: 'Registration failed. Please try again.'
+        username: "Registration failed. Please try again.",
       }));
     } finally {
       setIsLoading(false);
@@ -90,9 +95,12 @@ export default function UserCreationForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2  mx-auto p-6 bg-white rounded-lg shadow grid grid-cols-2 gap-2">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-2  mx-auto p-6 bg-white rounded-lg shadow grid grid-cols-2 gap-2"
+    >
       {/* <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2> */}
-      
+
       <Input
         label="Username"
         name="username"
@@ -110,16 +118,6 @@ export default function UserCreationForm() {
         value={formData.password}
         onChange={handleChange}
         error={errors.password}
-        required
-      />
-
-      <Input
-        label="Full Name"
-        name="name"
-        type="text"
-        value={formData.name}
-        onChange={handleChange}
-        error={errors.name}
         required
       />
 
@@ -152,11 +150,7 @@ export default function UserCreationForm() {
         error={errors.lastname}
       />
 
-      <Button
-        type="submit"
-        className="w-full"
-        isLoading={isLoading}
-      >
+      <Button type="submit" className="w-full" isLoading={isLoading}>
         Create Account
       </Button>
     </form>

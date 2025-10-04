@@ -19,7 +19,8 @@ export default async function UsersPage() {
                 'Cookie': `token=${token.value}`,
                 'Content-Type': 'application/json',
             },
-            cache: 'no-store'
+            cache: 'no-store',
+            next: { revalidate: 5 }
         });
 
         if (!res.ok) {

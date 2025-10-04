@@ -60,6 +60,7 @@ export default function LoginForm() {
         },
         credentials: 'include', // This is crucial for cookies
         body: JSON.stringify(formData),
+        next: { revalidate: 5 }
       });
 
       if (!response.ok) {

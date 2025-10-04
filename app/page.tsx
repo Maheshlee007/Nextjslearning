@@ -2,6 +2,7 @@ import axios from "axios";
 import prisma from "@/db";
 import { NextRequest } from "next/server";
 
+
 async function fetchData() {
   const res = await axios.get("https://jsonplaceholder.typicode.com/todos", {
     // next: { revalidate: 10 } //for ISR

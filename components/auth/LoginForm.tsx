@@ -53,11 +53,12 @@ export default function LoginForm() {
     setIsLoading(true);
     
     try {
-      const response = await fetch('/api/auth/signin', {
+      const response = await fetch('http://localhost:4000/signin', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
+        credentials: 'include', // This is crucial for cookies
         body: JSON.stringify(formData),
       });
 
@@ -66,7 +67,7 @@ export default function LoginForm() {
         throw new Error(error.message || 'Invalid credentials');
       }
 
-      router.push('/dashboard'); // Redirect to dashboard after successful login
+      router.push('/users'); // Redirect to dashboard after successful login
     } catch (error) {
       console.error('Login error:', error);
       setErrors({

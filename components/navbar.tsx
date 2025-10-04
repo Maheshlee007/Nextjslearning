@@ -1,4 +1,5 @@
 "use client"
+import NextAuthPage from '@/app/nextauth/page'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -24,12 +25,7 @@ const Navbar = () => {
                         <Link href="/about" className="text-gray-600 hover:text-gray-900">
                             About
                         </Link>
-                        <Link href="/services" className="text-gray-600 hover:text-gray-900">
-                            Services
-                        </Link>
-                        <Link href="/contact" className="text-gray-600 hover:text-gray-900">
-                            Contact
-                        </Link>
+                        {/* <NextAuthPage/> */}
                     </div>
 
                     {/* Mobile Navigation Button */}
